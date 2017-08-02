@@ -1,0 +1,120 @@
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<title>Simple Lottery</title>
+		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	</head>
+	<body style="padding-top: 50px;">
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12">
+					<h1><span id="campNome">Simple Lottery</span></h1>
+				</div>
+			</div>
+			<!-- AutoResponsivo -->
+			<ins class="adsbygoogle"
+		     style="display:block"
+		     data-ad-client="ca-pub-9685647915691104"
+		     data-ad-slot="5751272710"
+		     data-ad-format="auto"></ins>
+		     <p>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="panel panel-primary">
+				            <div class="panel-heading">
+				              <h3 class="panel-title" id='participantes'>Participantes</h3>
+				            </div>
+				            <div class="panel-body">
+								<form class="form-inline">
+								  <div class="form-group" data-toggle="tooltip" title="Você pode colocar uma lista de nomes separado por ;">
+								    <label for="nome">Nome</label>
+								    <input type="text" class="form-control" id="nome" size=50>
+
+								  </div>
+
+								  <button type="button" class="btn btn-default" id="btnAdicionar">Adicionar</button>
+								</form>
+								<div>
+									<ul id="listaParticipantes"></ul>
+								</div>
+							</div>
+				        </div>
+				        <button type="button" class="btn btn-default" id="btnSortear">Sortear</button>
+				        <p>
+					        <div class="panel panel-primary" id="pnlVencedor" style="display: none">
+					            <div class="panel-heading">
+					              <h3 class="panel-title">Vencedor</h3>
+					            </div>
+					            <div class="panel-body">
+									<h1><span id="Vencedor"></span></h1>
+								</div>
+					        </div>
+					    </p>
+					</div>
+				</div>
+			</p>
+		</div>
+		<script type="text/javascript">
+
+			var _options = "";
+
+			function adicionar(){
+
+				var nomes = $("#nome").val();
+				
+				if(nomes != ""){
+					_options += ";" + nomes;
+					if(nomes.indexOf(";") >= 0){
+						nomes = nomes.split(";");
+						for(i=0;i<nomes.length;i++){
+							$("#listaParticipantes").append("<li>" + nomes[i] + "</li>");
+						}
+					}
+					else{
+						$("#listaParticipantes").append("<li>" + nomes + "</li>");
+					}
+				}
+				$("#nome").val("");
+			}
+
+			function sortear() {
+				//remove the first ';'
+				_options = _options.substring(1);
+				$.ajax({
+					url:"/draw",
+					method:"POST",
+					data: JSON.stringify({options: _options}),
+			        contentType: "application/json; charset=utf-8",
+			        dataType: "json",
+					success: function(data){
+						console.log(data.drawn);
+						$("#Vencedor").text(data.drawn);
+						$("#pnlVencedor").show();
+						
+					},
+					error: function(data, errStatus, err){
+						$("#messages").addClass("alert alert-danger");
+						$("#messages").text(err + '\n' + JSON.parse(data.responseText).data.message);
+					}
+				});
+			}
+
+			$(document).ready(function() {
+				//$("#pnlVencedor").hide();
+				$("#btnAdicionar").bind("click",adicionar);
+				$("#btnSortear").bind("click",sortear);
+				(adsbygoogle = window.adsbygoogle || []).push({});
+				$('[data-toggle="tooltip"]').tooltip(); 
+			});
+
+
+
+			
+		</script>
+	</body>
+</html>
