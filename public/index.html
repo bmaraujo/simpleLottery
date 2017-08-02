@@ -25,6 +25,7 @@
 		     <p>
 				<div class="row">
 					<div class="col-sm-12">
+						<div id="messages"></div>
 						<div class="panel panel-primary">
 				            <div class="panel-heading">
 				              <h3 class="panel-title" id='participantes'>Participantes</h3>
@@ -44,7 +45,8 @@
 								</div>
 							</div>
 				        </div>
-				        <button type="button" class="btn btn-default" id="btnSortear">Sortear</button>
+				        <button type="button" class="btn btn-primary" id="btnSortear" disabled>Sortear</button>
+				        <button type="button" class="btn btn-default" id="btnReiniciar" disabled>Reiniciar</button>
 				        <p>
 					        <div class="panel panel-primary" id="pnlVencedor" style="display: none">
 					            <div class="panel-heading">
@@ -68,6 +70,8 @@
 
 			function adicionar(){
 
+				$("#pnlVencedor").hide();
+
 				var nomes = $("#nome").val();
 				
 				if(nomes != ""){
@@ -83,11 +87,15 @@
 					}
 				}
 				$("#nome").val("");
+				$('#btnSortear').prop('disabled', false);
+				$('#btnReiniciar').prop('disabled', false);
 			}
 
 			function sortear() {
-				//remove the first ';'
-				_options = _options.substring(1);
+				//remove the first ';' when it is there
+				if(_options.indexOf(";") == 0){
+					_options = _options.substring(1);
+				}
 				$.ajax({
 					url:"/draw",
 					method:"POST",
@@ -107,10 +115,19 @@
 				});
 			}
 
+			function reiniciar(){
+				_options = "";
+				$('#listaParticipantes').empty();
+				$('#btnSortear').prop('disabled', true);
+				$('#btnReiniciar').prop('disabled', true);
+				$("#pnlVencedor").hide();
+			}
+
 			$(document).ready(function() {
 				//$("#pnlVencedor").hide();
 				$("#btnAdicionar").bind("click",adicionar);
 				$("#btnSortear").bind("click",sortear);
+				$("#btnReiniciar").bind("click",reiniciar);
 				(adsbygoogle = window.adsbygoogle || []).push({});
 				$('[data-toggle="tooltip"]').tooltip(); 
 			});
