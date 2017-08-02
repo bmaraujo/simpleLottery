@@ -1,0 +1,140 @@
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<title>Simple Lottery</title>
+		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<link rel="stylesheet" href="/stylesheets/style.css" />
+	</head>
+	<body>
+		<div class="page-header">
+		  
+		  <h1 style=""><img src="/images/logo.png" style="width: 300px;vertical-align: middle;">Simple Lottery</h1>
+		
+		</div>
+		<div class="container">
+			<!-- AutoResponsivo -->
+			<ins class="adsbygoogle"
+		     style="display:block"
+		     data-ad-client="ca-pub-9685647915691104"
+		     data-ad-slot="5751272710"
+		     data-ad-format="auto"></ins>
+		     <p>
+				<div class="row">
+					<div class="col-sm-12">
+						<div id="messages"></div>
+						<div class="panel panel-primary">
+				            <div class="panel-heading">
+				              <h3 class="panel-title" id='participantes'>Participantes</h3>
+				            </div>
+				            <div class="panel-body">
+								<form class="form-inline">
+								  <div class="form-group" data-toggle="tooltip" title="Você pode colocar uma lista de nomes separado por ;">
+								    <label for="nome">Nome</label>
+								    <input type="text" class="form-control" id="nome" size=50>
+
+								  </div>
+
+								  <button type="button" class="btn btn-default" id="btnAdicionar">Adicionar</button>
+								</form>
+								<div>
+									<ul id="listaParticipantes"></ul>
+								</div>
+							</div>
+				        </div>
+				        <button type="button" class="btn btn-primary" id="btnSortear" disabled>Sortear</button>
+				        <button type="button" class="btn btn-default" id="btnReiniciar" disabled>Reiniciar</button>
+				        <p>
+					        <div class="panel panel-primary" id="pnlVencedor" style="display: none">
+					            <div class="panel-heading">
+					              <h3 class="panel-title">Vencedor</h3>
+					            </div>
+					            <div class="panel-body">
+									<h1><span id="Vencedor"></span></h1>
+								</div>
+					        </div>
+					    </p>
+					</div>
+				</div>
+			</p>
+		</div>
+		<div class="footer">
+			The code for this site is available at <a href="https://github.com/bmaraujo/simpleLottery" target="_blank">GitHub</a>
+		</div>
+		<script type="text/javascript">
+
+			var _options = "";
+
+			function adicionar(){
+
+				$("#pnlVencedor").hide();
+
+				var nomes = $("#nome").val();
+				
+				if(nomes != ""){
+					_options += ";" + nomes;
+					if(nomes.indexOf(";") >= 0){
+						nomes = nomes.split(";");
+						for(i=0;i<nomes.length;i++){
+							$("#listaParticipantes").append("<li>" + nomes[i] + "</li>");
+						}
+					}
+					else{
+						$("#listaParticipantes").append("<li>" + nomes + "</li>");
+					}
+				}
+				$("#nome").val("");
+				$('#btnSortear').prop('disabled', false);
+				$('#btnReiniciar').prop('disabled', false);
+			}
+
+			function sortear() {
+				//remove the first ';' when it is there
+				if(_options.indexOf(";") == 0){
+					_options = _options.substring(1);
+				}
+				$.ajax({
+					url:"/draw",
+					method:"POST",
+					data: JSON.stringify({options: _options}),
+			        contentType: "application/json; charset=utf-8",
+			        dataType: "json",
+					success: function(data){
+						console.log(data.drawn);
+						$("#Vencedor").text(data.drawn);
+						$("#pnlVencedor").show();
+						
+					},
+					error: function(data, errStatus, err){
+						$("#messages").addClass("alert alert-danger");
+						$("#messages").text(err + '\n' + JSON.parse(data.responseText).data.message);
+					}
+				});
+			}
+
+			function reiniciar(){
+				_options = "";
+				$('#listaParticipantes').empty();
+				$('#btnSortear').prop('disabled', true);
+				$('#btnReiniciar').prop('disabled', true);
+				$("#pnlVencedor").hide();
+			}
+
+			$(document).ready(function() {
+				//$("#pnlVencedor").hide();
+				$("#btnAdicionar").bind("click",adicionar);
+				$("#btnSortear").bind("click",sortear);
+				$("#btnReiniciar").bind("click",reiniciar);
+				(adsbygoogle = window.adsbygoogle || []).push({});
+				$('[data-toggle="tooltip"]').tooltip(); 
+			});
+
+
+
+			
+		</script>
+	</body>
+</html>
